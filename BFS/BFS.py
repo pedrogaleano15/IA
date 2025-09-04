@@ -1,187 +1,321 @@
-from collections import deque  # Importa deque para fila eficiente
-import time  # Para medir tempo de execução
+from collections import deque
+import time
 
 # Estado objetivo do 8-puzzle
 GOAL = (1, 2, 3,
-    4, 5, 6,
-    7, 8, 0)
+        4, 5, 6,
+        7, 8, 0)
 
 def show(state):
     """Exibe o estado atual do puzzle em formato 3x3"""
-    for i in range(0, 9, 3):  # Percorre linhas
-        print(state[i], state[i+1], state[i+2])  # Imprime cada linha
-    print()  # Espaço entre estados
+    for i in range(0, 9, 3):
+        print(state[i], state[i+1], state[i+2])
+    print()
 
 def find_zero(state):
-    """Retorna a posição do espaço vazio (0) no estado atual"""
-    return state.index(0)  # Usa método de lista para encontrar índice
+    """Encontra a posição do zero (espaço vazio) no estado"""
+    return state.index(0)
 
 def get_moves(z_pos):
-    """Gera movimentos válidos com base na posição atual do zero"""
+    """Retorna os movimentos possíveis a partir da posição do zero"""
     moves = []
-    row, col = divmod(z_pos, 3)  # Converte posição linear para (linha, coluna)
-    
-    # Verifica movimentos possíveis com base nas bordas
-    if row > 0: moves.append('up')     # Pode mover para cima se não estiver na linha superior
-    if row < 2: moves.append('down')   # Pode mover para baixo se não estiver na linha inferior
-    if col > 0: moves.append('left')   # Pode mover para esquerda se não estiver na coluna esquerda
-    if col < 2: moves.append('right')  # Pode mover para direita se não estiver na coluna direita
+    row, col = divmod(z_pos, 3)
+    if row > 0: moves.append('up')
+    if row < 2: moves.append('down')
+    if col > 0: moves.append('left')
+    if col < 2: moves.append('right')
     return moves
 
 def apply_move(state, move, z_pos):
-    """Aplica um movimento ao estado atual, retornando novo estado"""
-    # Calcula nova posição do zero baseado no movimento
+    """Aplica um movimento ao estado atual"""
     if move == 'up': new_pos = z_pos - 3
     elif move == 'down': new_pos = z_pos + 3
     elif move == 'left': new_pos = z_pos - 1
     elif move == 'right': new_pos = z_pos + 1
-    else: return None  # Movimento inválido
+    else: return None
     
-    # Cria novo estado trocando a posição do zero
-    state_list = list(state)  # Converte tupla em lista para modificação
-    state_list[z_pos], state_list[new_pos] = state_list[new_pos], state_list[z_pos]  # Troca posições
-    return tuple(state_list)  # Retorna como tupla (imutável)
+    state_list = list(state)
+    state_list[z_pos], state_list[new_pos] = state_list[new_pos], state_list[z_pos]
+    return tuple(state_list)
 
 def is_solvable(state):
-    """Verifica se o puzzle é solucionável contando inversões"""
-    seq = [x for x in state if x != 0]  # Remove o zero da sequência
+    """Verifica se o estado é solúvel (número par de inversões)"""
+    seq = [x for x in state if x != 0]
     inversions = sum(
-    1 for i in range(len(seq)) 
-    for j in range(i+1, len(seq)) 
-    if seq[i] > seq[j]  # Conta pares invertidos
+        1 for i in range(len(seq))
+        for j in range(i+1, len(seq))
+        if seq[i] > seq[j]
     )
-    return inversions % 2 == 0  # Solucionável se número de inversões for par
+    return inversions % 2 == 0
 
 def bfs_metrics(start):
-    """Implementação do BFS com coleta de métricas"""
-    
-    # Verifica se o estado é solucionável
+    """Busca em largura (BFS) com métricas"""
     if not is_solvable(start):
         print("Esse estado inicial é insolúvel!")
         return None, None
     
-    # Caso o estado inicial já seja o objetivo
     if start == GOAL:
         return [start], {"nodes_expanded": 0, "frontier_max": 1, "solution_len": 0}
     
-    # Inicializa estruturas de dados para busca
-    queue = deque([[start]])  # Fila de caminhos a explorar (inicia com estado inicial)
-    visited = {start}         # Conjunto de estados visitados
+    queue = deque([[start]])
+    visited = {start}
+    nodes_expanded = 0
+    frontier_max = 1
+    start_time = time.time()
     
-    # Variáveis para métricas
-    nodes_expanded = 0    # Contador de nós expandidos
-    frontier_max = 1      # Tamanho máximo da fronteira
-    start_time = time.time()  # Marca tempo inicial
-    
-    while queue:  # Enquanto houver estados para explorar
-        path = queue.popleft()  # Remove o primeiro caminho da fila (FIFO)
-        current = path[-1]      # Pega o estado atual do caminho
-        nodes_expanded += 1     # Incrementa contador de expansões
+    while queue:
+        path = queue.popleft()
+        current = path[-1]
+        nodes_expanded += 1
+        z_pos = find_zero(current)
         
-        z_pos = find_zero(current)  # Encontra posição do zero
-        
-        # Gera e explora todos os movimentos possíveis
         for move in get_moves(z_pos):
-            new_state = apply_move(current, move, z_pos)  # Gera novo estado
-            
-            # Ignora estados inválidos ou já visitados
+            new_state = apply_move(current, move, z_pos)
             if new_state is None or new_state in visited:
                 continue
             
-            # Verifica se encontrou solução
             if new_state == GOAL:
-                solution = path + [new_state]  # Cria caminho completo
+                solution = path + [new_state]
                 metrics = {
                     "nodes_expanded": nodes_expanded,
                     "frontier_max": max(frontier_max, len(queue)),
-                    "solution_len": len(solution) - 1,  # Número de movimentos = passos - 1
+                    "solution_len": len(solution) - 1,
                     "time": time.time() - start_time
                 }
-                return solution, metrics  # Retorna solução e métricas
+                return solution, metrics
             
-            # Atualiza estruturas para continuar busca
-            visited.add(new_state)  # Marca novo estado como visitado
-            queue.append(path + [new_state])  # Adiciona novo caminho à fila
-            frontier_max = max(frontier_max, len(queue))  # Atualiza tamanho máximo da fronteira
+            visited.add(new_state)
+            queue.append(path + [new_state])
+            frontier_max = max(frontier_max, len(queue))
     
-    # Caso não encontre solução (teoricamente não ocorre para estados solucionáveis)
     return None, {"nodes_expanded": nodes_expanded, "frontier_max": frontier_max, "solution_len": None}
 
-# Teste com estado inicial específico
-# Estado inicial do 8-puzzle (pode ser alterado para testar outros casos)
-start = (1, 2, 3,
-         0, 5, 6,
-         4, 7, 8)
-
-print("Estado inicial:")
-show(start)
-
-# Executa busca em largura (BFS)
-solution, metrics = bfs_metrics(start)
-
-# Exibe resultados do BFS
-if solution:
-    print(f"Solução encontrada em {metrics['solution_len']} movimentos:")
-    for step, state in enumerate(solution):
-        print(f"Passo {step}:")
-        show(state)
-    print("Métricas:", metrics)
-else:
-    print("Nenhuma solução encontrada!")
-
-# Implementação da busca em profundidade (DFS)
-# Retorna uma lista somente quando encontra solução
-def dfs(start: tuple) -> list | None:
-    # Métricas de desempenho
-    start_time = time.time()  # Medir o tempo localmente 
-    nodes_expanded = 0        # Contador de nós expandidos
-    frontier_max = 1          # Tamanho máximo da pilha
-
-    stack = [[start]]         # Cada elemento é um caminho (lista de estados)
-    visited = {start}         # Conjunto de estados visitados
-
+def dfs(start):
+    """Busca em profundidade (DFS)"""
+    start_time = time.time()
+    nodes_expanded = 0
+    frontier_max = 1
+    stack = [[start]]
+    visited = {start}
+    
     while stack:
-        frontier_max = max(frontier_max, len(stack))  # Atualiza tamanho máximo da pilha
-        path = stack.pop()      # Remove o último caminho (LIFO)
-        state = path[-1]        # Estado atual
-        nodes_expanded += 1     # Incrementa contador de expansões
-
+        frontier_max = max(frontier_max, len(stack))
+        path = stack.pop()
+        state = path[-1]
+        nodes_expanded += 1
+        
         if state == GOAL:
-            tempo_total = time.time() - start_time  # Medir o tempo total
-            depth = len(path) - 1                   # Profundidade da solução
+            tempo_total = time.time() - start_time
+            depth = len(path) - 1
             print("[DFS] - busca em profundidade")
-            print(f"* - profundidade(solução) = {depth} *")  # Profundidade da solução
-            print(f"* - expandido = {nodes_expanded} *")      # Nós expandidos
-            print(f"* - tempo = {tempo_total:.4f}s *")        # Tempo total
-            print(f"* - tamanho da fronteira = {frontier_max} *")  # Tamanho da fronteira
+            print(f"* - profundidade(solução) = {depth} *")
+            print(f"* - expandido = {nodes_expanded} *")
+            print(f"* - tempo = {tempo_total:.4f}s *")
+            print(f"* - tamanho da fronteira = {frontier_max} *")
             return path
-
-        z = find_zero(state)  # Posição do zero
-        # Para cada movimento possível a partir da posição do zero
-        for m in get_moves(z):  # Para cada movimento possível
-            ns = apply_move(state, m, z)  # Aplica o movimento e obtém novo estado
-            if ns not in visited:  # Se o novo estado ainda não foi visitado
-                visited.add(ns)  # Marca como visitado
-                stack.append(path + [ns])  # Adiciona novo caminho à pilha
-
-    # Marca o tempo total caso a busca falhe (não encontre solução)
+        
+        z = find_zero(state)
+        for m in get_moves(z):
+            ns = apply_move(state, m, z)
+            if ns is not None and ns not in visited:
+                visited.add(ns)
+                stack.append(path + [ns])
+    
     tempo_total = time.time() - start_time
     print("[DFS] - busca em profundidade falhou")
-    print(f"* - expandido = {nodes_expanded} *")  # Nós expandidos até falhar
-    print(f"* - tempo = {tempo_total:.4f}s *")    # Tempo total até falhar
-    print(f"* - tamanho da fronteira = {frontier_max} *")  # Tamanho máximo da pilha
+    print(f"* - expandido = {nodes_expanded} *")
+    print(f"* - tempo = {tempo_total:.4f}s *")
+    print(f"* - tamanho da fronteira = {frontier_max} *")
     return None
 
-# Chama a busca em profundidade (DFS) e exibe o resultado   
-print("\nExecutando DFS...")
-dfs_solution = dfs(start)
+def dls_ifs(state, limit, visited):
+    """Busca em profundidade limitada (para IFS)"""
+    if state == GOAL:
+        return [state]
+    
+    if limit == 0:
+        return None
+    
+    visited.add(state)
+    z = find_zero(state)
+    
+    for m in get_moves(z):
+        ns = apply_move(state, m, z)
+        if ns is not None and ns not in visited:
+            result = dls_ifs(ns, limit - 1, visited)
+            if result:
+                return [state] + result
+    
+    return None
 
-# Exibe resultados do DFS
-if dfs_solution is None:
-    print("Nenhuma solução encontrada com DFS.")
-else:
-    steps = len(dfs_solution) - 1
-    print(f"Solução encontrada em {steps} movimentos:")
-    for step, estado_profundidade in enumerate(dfs_solution):
-        print(f"Passo {step}:")
-        show(estado_profundidade)
+def IFS(start):
+    """Busca em profundidade iterativa (IFS)"""
+    start_time = time.time()
+    nodes_expanded = 0
+    frontier_max = 1
+    
+    for depth in range(50):  # Limite máximo de profundidade
+        visited = set()
+        result = dls_ifs(start, depth, visited)
+        nodes_expanded += len(visited)
+        frontier_max = max(frontier_max, len(visited))
+        
+        if result:
+            tempo_total = time.time() - start_time
+            print("[IFS] - busca em profundidade iterativa")
+            print(f"* - profundidade(solução) = {len(result) - 1} *")
+            print(f"* - expandido = {nodes_expanded} *")
+            print(f"* - tempo = {tempo_total:.4f}s *")
+            print(f"* - tamanho da fronteira = {frontier_max} *")
+            return result
+    
+    print("Nenhuma solução encontrada com IFS.")
+    return None
+
+def select_start_state():
+    """Menu para selecionar o estado inicial"""
+    print("\n" + "="*50)
+    print("SELECIONE O ESTADO INICIAL:")
+    print("="*50)
+    print("1 - Estado fácil:")
+    print("   1,2,3,")
+    print("   4,5,6,") 
+    print("   7,0,8")
+    print("\n2 - Estado médio:")
+    print("   1,2,3,")
+    print("   4,5,6,")
+    print("   0,7,8")
+    print("\n3 - Estado desafiador:")
+    print("   1,2,3,")
+    print("   5,0,6,")
+    print("   4,7,8")
+    print("\n4 - Personalizado (digitar manualmente)")
+    
+    choice = input("\nDigite o número da opção desejada: ")
+    
+    states = {
+        '1': (1, 2, 3, 4, 5, 6, 7, 0, 8),
+        '2': (1, 2, 3, 4, 5, 6, 0, 7, 8),
+        '3': (1, 2, 3, 5, 0, 6, 4, 7, 8),
+    }
+    
+    if choice in states:
+        if choice == '4':
+            print("\nDigite os 9 números do puzzle (0 representa o espaço vazio):")
+            print("Exemplo: 1 2 3 4 5 6 7 8 0")
+            try:
+                values = list(map(int, input("Digite os valores: ").split()))
+                if len(values) != 9:
+                    print("Erro: deve digitar exatamente 9 números!")
+                    return select_start_state()
+                return tuple(values)
+            except ValueError:
+                print("Erro: digite apenas números!")
+                return select_start_state()
+        else:
+            return states[choice]
+    else:
+        print("Opção inválida! Usando estado padrão.")
+        return (1, 2, 3, 0, 5, 6, 4, 7, 8)
+
+def select_algorithm():
+    """Menu para selecionar o algoritmo de busca"""
+    print("\n" + "="*50)
+    print("SELECIONE O ALGORITMO DE BUSCA:")
+    print("="*50)
+    print("1 - BFS (Busca em Largura)")
+    print("2 - DFS (Busca em Profundidade)")
+    print("3 - IFS (Busca em Profundidade Iterativa)")
+    print("4 - Voltar ao menu anterior")
+    print("5 - Sair do programa")
+    
+    return input("\nDigite o número da opção desejada: ")
+
+# Programa principal
+if __name__ == "__main__":
+    while True:
+        print("\n" + "="*60)
+        print("RESOLVEDOR DE 8-PUZZLE")
+        print("="*60)
+        
+        # Selecionar estado inicial
+        start = select_start_state()
+        
+        print(f"\nEstado inicial selecionado:")
+        show(start)
+        
+        if not is_solvable(start):
+            print("⚠️  AVISO: Este estado é INSOLÚVEL!")
+            print("O puzzle 8-puzzle requer um número par de inversões para ser solúvel.")
+            continue
+        
+        # Menu de algoritmos
+        while True:
+            escolha = select_algorithm()
+            
+            if escolha == '1':
+                print("\nExecutando BFS...")
+                solution, metrics = bfs_metrics(start)
+                if solution:
+                    print(f"Solução encontrada em {metrics['solution_len']} movimentos!")
+                    mostrar_solucao = input("Deseja ver a solução passo a passo? (s/n): ").lower()
+                    if mostrar_solucao == 's':
+                        for step, state in enumerate(solution):
+                            print(f"Passo {step}:")
+                            show(state)
+                    print("\nMétricas do BFS:")
+                    print(f"- Nós expandidos: {metrics['nodes_expanded']}")
+                    print(f"- Tamanho máximo da fronteira: {metrics['frontier_max']}")
+                    print(f"- Tempo de execução: {metrics['time']:.4f}s")
+                else:
+                    print("Nenhuma solução encontrada!")
+            
+            elif escolha == '2':
+                print("\nExecutando DFS...")
+                dfs_solution = dfs(start)
+                if dfs_solution:
+                    steps = len(dfs_solution) - 1
+                    print(f"Solução encontrada em {steps} movimentos!")
+                    mostrar_solucao = input("Deseja ver a solução passo a passo? (s/n): ").lower()
+                    if mostrar_solucao == 's':
+                        for step, estado in enumerate(dfs_solution):
+                            print(f"Passo {step}:")
+                            show(estado)
+                else:
+                    print("Nenhuma solução encontrada com DFS.")
+            
+            elif escolha == '3':
+                print("\nExecutando IFS...")
+                ifs_solution = IFS(start)
+                if ifs_solution:
+                    steps = len(ifs_solution) - 1
+                    print(f"Solução encontrada em {steps} movimentos!")
+                    mostrar_solucao = input("Deseja ver a solução passo a passo? (s/n): ").lower()
+                    if mostrar_solucao == 's':
+                        for step, estado in enumerate(ifs_solution):
+                            print(f"Passo {step}:")
+                            show(estado)
+                else:
+                    print("Nenhuma solução encontrada com IFS.")
+            
+            elif escolha == '4':
+                print("Voltando ao menu anterior...")
+                break
+            
+            elif escolha == '5':
+                print("Saindo do programa. Até logo!")
+                exit()
+            
+            else:
+                print("Opção inválida! Tente novamente.")
+            
+            # Perguntar se quer continuar com o mesmo estado
+            continuar = input("\nDeseja testar outro algoritmo com este mesmo estado? (s/n): ").lower()
+            if continuar != 's':
+                break
+        
+        # Perguntar se quer executar novamente com outro estado
+        executar_novamente = input("\nDeseja executar com outro estado inicial? (s/n): ").lower()
+        if executar_novamente != 's':
+            print("Obrigado por usar o resolvedor de 8-puzzle!")
+            break
