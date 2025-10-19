@@ -1,0 +1,28 @@
+{
+    "cenarios": [
+        {
+            "nome": "cidade",
+            "respostas": {
+                "Poluicao": 1,
+                "Tabagismo": 0,
+                "Ansiedade": 1,
+                "Fumante": 0,
+                "TossePersistente": 0,
+                "Enfisema": 0,
+                "Dispneia": 0
+            }
+        },
+        {
+            "nome": "pintoazul",
+            "respostas": {
+                "Poluicao": 0,
+                "Tabagismo": 1,
+                "Ansiedade": 1,
+                "Fumante": 1,
+                "TossePersistente": 0,
+                "Enfisema": 0,
+                "Dispneia": 1
+            }
+        }
+    ]
+}
