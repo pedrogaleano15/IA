@@ -1,0 +1,68 @@
+PROCESSO DO PROJETO — IA
+=========================================================
+
+1. HISTÓRICO DE CRIAÇÃO
+------------------------
+- 2025-08-20: Primeiro commit, começando com um resolvedor de busca BFS.
+- 2025-09-02 a 2025-09-04: Adição dos métodos DFS e IFS/heurísticas.
+- 2025-10-18: Versão final do resolvedor de 8-puzzle; adição do projeto
+  ExemplodeIA (PyTorch ResNet).
+- 2025-10-19: Projeto renomeado para Modelo_ia; adição do projeto
+  rede_bayesiana (pgmpy + reportlab).
+- 2025-11-17: Finalização com código comentado, README formatado e
+  memorial/vídeo demo.
+- 2026-04-12: Criação do README principal do repositório de estudos de IA.
+
+2. REVISÃO DE 2026-08-06
+--------------------------
+Problemas encontrados:
+- Pasta "rede_bayesiana_Steamlit" (e a subpasta interna
+  "Rede_Bayesiana_Steamlit") tinham o erro de digitação "Steamlit" em vez
+  de "Streamlit".
+- BFS/README.md e os 5 arquivos requirements.txt do repositório estavam
+  salvos em UTF-16 (sem BOM), inconsistente com o resto do repositório
+  (provavelmente gerado via redirecionamento do PowerShell / "pip freeze >").
+- Todas as instruções de clone dos READMEs de subprojetos apontavam para
+  repositório/caminhos que não existem: "GUSTAVO-IA" em vez de "IA",
+  "rede_bayesian" em vez de "rede_bayesiana", "modelopeixe" em vez de
+  "Modelo_ia", "main.py" em vez de "Modelo_ia.py", e o README do Streamlit
+  apontava para "bayes-lung-diagnostic".
+- Modelo_ia/README.md e rede_bayesiana/README.md estavam literalmente
+  cortados no meio de uma frase.
+- README da versão Streamlit da rede bayesiana tinha um bloco de código
+  markdown sem fechamento, fazendo o GitHub renderizar cerca de dois
+  terços do arquivo como um bloco de código só.
+- O README raiz mandava rodar "pip install -r requirements.txt" na raiz do
+  repositório, mas não existe requirements.txt na raiz (cada subprojeto
+  tem o seu, corretamente).
+- O comando de execução do Streamlit no README raiz referenciava um
+  "app.py" que não existe (o arquivo real é rede.py).
+- Import não usado (numpy) em rede.py.
+
+O que foi feito:
+- Pasta renomeada via git mv para corrigir o typo.
+- Arquivos com encoding errado convertidos para UTF-8.
+- Corrigidas as URLs de clone, caminhos e nomes de arquivo em todos os
+  READMEs.
+- Completados os dois READMEs que estavam cortados.
+- Corrigido o bloco de código markdown sem fechamento.
+- Removido o import não usado.
+- README.md raiz reescrito com visão geral, stack de cada subprojeto e
+  instruções de execução corretas para cada um.
+
+Verificação: todos os arquivos .py tocados passam em "py_compile"; todos os
+arquivos de texto tocados confirmados em UTF-8/ASCII; nenhuma referência
+sobrando ao nome antigo com erro de digitação, ao nome errado do
+repositório ou aos nomes de arquivo incorretos.
+
+Deixado de propósito, sinalizado para conhecimento:
+- Os requirements.txt são dumps completos de "pip freeze" de um ambiente
+  virtual compartilhado (alguns incluem toda a árvore de dependências do
+  PyTorch/pandas mesmo onde só alguns pacotes são importados diretamente).
+  Não estão errados, só amplos — reduzi-los ao mínimo necessário fugiria de
+  uma correção conservadora.
+- answers.json e os artefatos gerados temp_network_graph.png/PDF foram
+  deixados como estavam, já que removê-los não fazia parte do pedido.
+
+Commit: 2ddaa3d — "Corrige typo de pasta, encoding e links quebrados nos
+READMEs"
