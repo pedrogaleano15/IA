@@ -2,7 +2,7 @@
 
 Este projeto treina uma rede neural convolucional (ResNet18 pré-treinada) para classificar imagens de peixes usando PyTorch.
 
-O script `main.py` está configurado para:
+O script `Modelo_ia.py` está configurado para:
 * Carregar um dataset de imagens das pastas `./data/train` e `./data/test`.
 * Aplicar transformações de redimensionamento e normalização.
 * Dividir os dados de treino em conjuntos de treino e validação (80/20).
@@ -23,8 +23,8 @@ O script `main.py` está configurado para:
 
 1.  **Clone o repositório e entre na pasta:**
     ```bash
-    git clone [https://github.com/pedrogaleano15/GUSTAVO-IA.git](https://github.com/pedrogaleano15/GUSTAVO-IA.git)
-    cd GUSTAVO-IA/modelopeixe
+    git clone https://github.com/pedrogaleano15/IA.git
+    cd IA/Modelo_ia
     ```
 
 2.  **Crie e ative um ambiente virtual:**
@@ -42,6 +42,26 @@ O script `main.py` está configurado para:
 
 ### 1. Preparação dos Dados
 
-O script **requer** que os dados de imagem estejam organizados no formato `ImageFolder` dentro da pasta `data/`. (O arquivo `data.zip` enviado estava vazio, então você deve preenchê-lo localmente).
+O script **requer** que os dados de imagem estejam organizados no formato `ImageFolder` dentro da pasta `data/`, com uma subpasta por classe em `train/` e `test/`. O dataset já incluído no repositório (`data/train` e `data/test`) contém três classes de peixes ornamentais:
 
-A estrutura de pastas esperada é:
+```
+data/
+├── train/
+│   ├── acara-bandeira/
+│   ├── carpa/
+│   └── platy-laranja/
+└── test/
+    ├── acara-bandeira/
+    ├── carpa/
+    └── platy-laranja/
+```
+
+O arquivo `v4_train_test.zip` é a origem compactada desses mesmos dados.
+
+### 2. Executar o treinamento
+
+```bash
+python Modelo_ia.py
+```
+
+O script imprime as contagens de treino/validação/teste, treina o modelo por 10 épocas e grava as métricas de perda e acurácia em `runs/experimento_ia` (visualizável com `tensorboard --logdir runs`).

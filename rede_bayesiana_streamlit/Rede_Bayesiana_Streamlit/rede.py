@@ -8,7 +8,6 @@ from pgmpy.inference import VariableElimination
 from fpdf import FPDF
 import matplotlib.pyplot as plt
 import networkx as nx
-import numpy as np
 
 # --- Configuração de Pastas ---
 # Cria o diretório para salvar os relatórios PDF caso não exista

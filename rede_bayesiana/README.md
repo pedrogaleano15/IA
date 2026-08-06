@@ -26,8 +26,8 @@ Este projeto implementa uma Rede Bayesiana simples (usando `pgmpy`) focada em um
 
 1.  **Clone o repositório e entre na pasta:**
     ```bash
-    git clone [https://github.com/pedrogaleano15/GUSTAVO-IA.git](https://github.com/pedrogaleano15/GUSTAVO-IA.git)
-    cd GUSTAVO-IA/rede_bayesian
+    git clone https://github.com/pedrogaleano15/IA.git
+    cd IA/rede_bayesiana
     ```
 
 2.  **Crie e ative um ambiente virtual:**
@@ -47,3 +47,6 @@ Com o ambiente virtual ativado, execute o script principal:
 
 ```bash
 python rede_bayesiana_report.py
+```
+
+Um menu interativo será exibido no terminal para escolher entre rodar o exemplo padrão, inserir novas evidências, gerar relatórios em PDF (salvos na raiz do projeto) ou listar os cenários já salvos em `answers.json`.

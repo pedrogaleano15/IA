@@ -2,56 +2,112 @@
 
 Repositório com implementações práticas de conceitos fundamentais de Inteligência Artificial, desenvolvidos durante a graduação em Engenharia da Computação na UCDB.
 
+Cada subpasta é um projeto independente, com seu próprio `requirements.txt` e instruções de execução — não há um único ambiente compartilhado entre eles.
+
 ---
 
 ## Conteúdo
 
 ### BFS — Busca em Largura
-Implementação do algoritmo de **Busca em Largura (Breadth-First Search)** aplicado à resolução de problemas de busca em espaço de estados. O algoritmo explora sistematicamente todos os nós de um grafo por nível, garantindo encontrar a solução de menor custo em grafos não ponderados.
+**Pasta:** [`BFS/`](BFS/)
 
-**Conceitos aplicados:** grafos, fila (FIFO), complexidade de tempo O(V + E).
+Resolvedor do clássico **8-Puzzle** implementado do zero, comparando três algoritmos de busca cega: **BFS** (Busca em Largura), **DFS** (Busca em Profundidade) e **IDS** (Aprofundamento Iterativo). Verifica a solubilidade do estado inicial (paridade de inversões) e exibe métricas de desempenho (nós expandidos, tamanho máximo da fronteira, tempo de execução) para cada algoritmo.
 
----
-
-### Rede Bayesiana
-Modelagem e implementação de uma **Rede Bayesiana** para inferência probabilística. O projeto permite calcular probabilidades condicionais com base em evidências observadas, demonstrando o raciocínio sob incerteza.
-
-**Conceitos aplicados:** probabilidade condicional, teorema de Bayes, independência condicional, inferência por variável de eliminação.
-
----
-
-### Rede Bayesiana com Interface Streamlit
-Versão interativa da Rede Bayesiana com interface web construída com **Streamlit**, permitindo ao usuário inserir evidências e visualizar as probabilidades inferidas em tempo real.
+**Tecnologias:** Python 3, apenas biblioteca padrão (`collections`, `time`).
 
 **Como executar:**
 ```bash
-pip install streamlit pgmpy
-streamlit run rede_bayesiana_Steamlit/Rede_Bayesiana_Steamlit/app.py
+cd BFS
+python BFS.py
 ```
 
 ---
 
-### Modelo de IA / Exemplo de IA
-Experimentos adicionais com modelos de IA, explorando conceitos como classificação e aprendizado supervisionado.
+### Rede Bayesiana (CLI + relatórios em PDF)
+**Pasta:** [`rede_bayesiana/`](rede_bayesiana/)
+
+Rede Bayesiana para inferência probabilística sobre fatores de risco de câncer de pulmão (poluição, tabagismo, enfisema, sintomas, etc.). Menu interativo em terminal permite rodar um cenário de exemplo, cadastrar novas evidências (salvas em `answers.json`) e gerar relatórios em PDF com os resultados e gráficos de cada consulta.
+
+**Conceitos aplicados:** probabilidade condicional, teorema de Bayes, inferência por eliminação de variáveis (`VariableElimination`).
+
+**Tecnologias:** Python 3, `pgmpy`, `matplotlib`, `reportlab`.
+
+**Como executar:**
+```bash
+cd rede_bayesiana
+pip install -r requirements.txt
+python rede_bayesiana_report.py
+```
+
+---
+
+### Rede Bayesiana com Interface Streamlit
+**Pasta:** [`rede_bayesiana_streamlit/Rede_Bayesiana_Streamlit/`](rede_bayesiana_streamlit/Rede_Bayesiana_Streamlit/)
+
+Versão interativa (web) do mesmo domínio de diagnóstico pulmonar, com dashboard em **Streamlit**: entrada de evidências por formulário, visualização da topologia da rede (NetworkX), inspeção das tabelas de probabilidade condicional (CPDs) de cada nó e geração de laudo em PDF com o resultado da inferência.
+
+**Tecnologias:** Python 3.10+, `streamlit`, `pgmpy`, `pandas`, `networkx`, `matplotlib`, `fpdf2`.
+
+**Como executar:**
+```bash
+cd rede_bayesiana_streamlit/Rede_Bayesiana_Streamlit
+pip install -r requirements.txt
+streamlit run rede.py
+```
+
+---
+
+### Modelo de Classificação de Peixes (PyTorch/ResNet)
+**Pasta:** [`Modelo_ia/`](Modelo_ia/)
+
+Treinamento de uma **ResNet18** pré-treinada, com a camada final adaptada, para classificar imagens de peixes ornamentais em três classes (`acara-bandeira`, `carpa`, `platy-laranja`). Inclui divisão treino/validação/teste, loop de treinamento por 10 épocas e logging de perda/acurácia via **TensorBoard**. O dataset de imagens já está incluído no repositório.
+
+**Tecnologias:** Python 3, `torch`, `torchvision`, `scikit-learn`, `tensorboard`.
+
+**Como executar:**
+```bash
+cd Modelo_ia
+pip install -r requirements.txt
+python Modelo_ia.py
+```
+
+---
+
+### Exemplo de IA (template de classificação com PyTorch)
+**Pasta:** [`ExemplodeIA/`](ExemplodeIA/)
+
+Script-template para um projeto de classificação de imagens com PyTorch/ResNet: define hiperparâmetros, transformações de imagem e o carregamento dos datasets de treino/teste, além da separação treino/validação com `scikit-learn`. Diferente do `Modelo_ia`, este script não inclui um dataset nem executa o treinamento — serve como ponto de partida.
+
+**Tecnologias:** Python 3, `torch`, `torchvision`, `scikit-learn`.
+
+**Como executar:**
+```bash
+cd ExemplodeIA
+pip install -r requirements.txt
+python ExemploModeloDeIA.py
+```
+*(espera uma pasta `./data/train` e `./data/test` no formato `ImageFolder`, que não está incluída neste projeto).*
 
 ---
 
 ## Tecnologias
 
 ![Python](https://img.shields.io/badge/Python-3776AB?style=flat&logo=python&logoColor=white)
+![PyTorch](https://img.shields.io/badge/PyTorch-EE4C2C?style=flat&logo=pytorch&logoColor=white)
 ![Streamlit](https://img.shields.io/badge/Streamlit-FF4B4B?style=flat&logo=streamlit&logoColor=white)
 
-**Bibliotecas:** `pgmpy`, `streamlit`, `networkx`
+**Principais bibliotecas:** `pgmpy`, `streamlit`, `torch`, `torchvision`, `scikit-learn`, `networkx`, `matplotlib`, `reportlab`, `fpdf2`.
 
 ---
 
-## Como clonar e rodar
+## Como clonar
 
 ```bash
 git clone https://github.com/pedrogaleano15/IA.git
 cd IA
-pip install -r requirements.txt
 ```
+
+Depois, entre na pasta do projeto desejado e instale as dependências específicas dele (veja "Como executar" em cada seção acima).
 
 ---
 
@@ -60,7 +116,8 @@ pip install -r requirements.txt
 - Como modelar incerteza com redes probabilísticas
 - Implementação de algoritmos de busca clássicos do zero
 - Construção de interfaces interativas com Streamlit
-- Diferença prática entre busca cega (BFS) e busca informada
+- Diferença prática entre busca cega (BFS/DFS/IDS) e o custo de cada abordagem
+- Treinamento e ajuste fino de redes convolucionais (transfer learning com ResNet)
 
 ---
 

@@ -20,8 +20,8 @@ O script está configurado para:
 
 1.  **Clone o repositório e entre na pasta:**
     ```bash
-    git clone [https://github.com/pedrogaleano15/GUSTAVO-IA.git](https://github.com/pedrogaleano15/GUSTAVO-IA.git)
-    cd GUSTAVO-IA/ExemplodeIA
+    git clone https://github.com/pedrogaleano15/IA.git
+    cd IA/ExemplodeIA
     ```
 
 2.  **Crie e ative um ambiente virtual:**
